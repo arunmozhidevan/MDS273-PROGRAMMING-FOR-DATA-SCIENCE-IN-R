@@ -1,0 +1,128 @@
+---
+title: "Lab 4 Familiarity with R Dataframes"
+output: html_notebook
+---
+
+## 1. Run the code
+
+### The assigned str values are repeated for the number of times given and then distinctly categorizes it in sorted manner without any repetations
+```{r}
+gender=factor(c(rep("female",10),rep("male",16)))
+gender
+```
+
+### This command gives occurance/frequency of distinct values according to the category.
+```{r}
+table(gender)
+```
+
+### It returns NA values to all the values stored in gender variable as in the above 1st command and levels is the variable assigned with a vector which will be displayed originally holding all male/female values.
+```{r}
+gender=factor(gender,levels=c("male","female"))
+gender
+```
+
+### Since from the consecutive previous command we can find the gender variable holding all previously defined values since levels is case sensitive and correctly defined and returns the total occurances according to each category.
+```{r}
+table(gender)
+```
+### Here we can conclude, male = NA values and females are fetched because the levels variable is case-sensitive and male is not defined properly. Thus it returns 0 = male and 10 = female.
+```{r}
+gender=factor(gender, levels=c("Male","female"))
+gender
+table(gender)
+```
+### Basically, this command removes gender variable/objecr from R. Hence it'll return, "Error: object 'gender' not found"  
+```{r}
+rm(gender)
+gender
+```
+
+## 2. Create a blank matrix with dimensions accepted from the user 
+
+```{r}
+# We used scan() to accept nrow,ncol from user and fill the table with NA values
+y=matrix(data=NA,nrow=scan(,what=integer()), ncol=scan(,what=integer()))
+y
+```
+
+
+## 3. Create 2 matrices and perform matrix addition, subtraction
+```{r}
+
+# R program to add and sub two matrices
+  
+# Creating 1st Matrix
+B = matrix(c(1, 2, 3, 4, 5, 6), nrow = 2, ncol = 3) 
+  
+# Creating 2nd Matrix
+C = matrix(c(7, 8, 9, 10, 11, 12), nrow = 2, ncol = 3)
+
+#Add matrix
+B+C
+
+#Subtract Mtarix
+B-C
+```
+## 4. Create a list containing a vector(‘name’), a matrix(‘mat’) and a list(‘Subject’).
+```{r}
+#Make list with vector,character vector, matrix, float vector 
+l1=list(charvec=c('A','B','C','D'),matvec=matrix(1:50,ncol=5),subvec=c('Math','R','Regression','ML'))
+length(l1)
+```
+
+### 4a) Print the count of objects Add a new element to the list named ‘Test’.with “test1”.
+```{r}
+length(l1)
+l1=c(l1,c(test='Test1'))
+length(l1)
+l1
+#matrix(append(Test,c('Test1'))) # Test1 is appended to empty list Test
+```
+### 4b) Now print the number of objects
+```{r}
+length(l1) # Length of l1 objects
+```
+### 4c) Remove the second object from the list.
+```{r}
+length(l1) # It contains 2 objects
+l1=within(l1, rm(matvec)) # removed 2nd object in original list
+length(l1)# After removing 3nd object now the length=1
+```
+### 4D) Name the objects in the new list
+
+```{r}
+ls(l1) # Get list objectnames
+```
+### 4E) Print the length of the first two components of the list
+```{r}
+length(l1[1:2]) # gives length of first 2 components in list
+ls(l1[1:2]) # gives list of first 2 components in list
+```
+## 5. Create a data frame Stud_Score with variables Reg_No, Name,Marks ,Grade
+## ‘Grade’ contains the values ‘S’,’F’
+### - Enter details for 10 students
+### - Write a R program to get the statistical summary and nature of the data of a given data frame.
+### - Find the numbers of students who have obtained the grade ‘S’
+```{r}
+x1=c(1:10) # reg no
+x2=letters[1:10] # names
+x3=runif(10, min=10, max=99) # random marks
+x4=c(rep("S",5),rep("F",5)) # grades
+max_length <- max(c(length(x1), length(x2), length(x3), length(x4)))# Find out maximum length
+max_length
+Stud_Score = data.frame(regno = c(x1,rep(NA, max_length - length(x1))),
+                   name = c(x2, rep(NA, max_length - length(x2))),
+                   marks = c(x3, rep(NA, max_length - length(x3))),
+                   grade = c(x4, rep(NA, max_length - length(x4))))
+Stud_Score  # print dataframe
+```
+```{r}
+str(Stud_Score) # gives structure of dataframe/ nature of Dataframe
+```
+```{r}
+summary(Stud_Score) # gives mean,med,mode,length,quartile,class etc. information
+```
+```{r}
+subset(Stud_Score, grade=="S") # Retrive details of student with grade 'S'
+```
