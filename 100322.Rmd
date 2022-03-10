@@ -1,3 +1,4 @@
+Create First DataFrame with unequal vectors
 ```{r}
 x2=c(72:74) # pulse
 x3=runif(3, min=3, max=99) # duration
@@ -8,8 +9,45 @@ df1 = data.frame(training = c(c('S','M','S')),pulse = c(x2, rep(NA, max_length -
 df1
 ```
 
+Create another DataFrame
+```{r}
+df2=data.frame(df1[-1,])
+df2
+```
+
+Merged 2 DataFrames
+```{r}
+rbind(df1,df2)
+```
 
 ```{r}
-print('Drashty')
+modified.dataframe=df1$regno<-sprintf("%d",101:103)
+print(modified.dataframe)
+df1
 ```
+
+Brief description of data
+```{r}
+str(df1)
+```
+Names of each variable
+```{r}
+names(df1)
+```
+
+Summary of each variable with mean,median,mode etc.
+```{r}
+summary(df1)
+```
+Gives first 6 records
+```{r}
+head(df1)
+```
+
+Gives last 6 records
+```{r}
+tail(df1)
+```
+
+
 
