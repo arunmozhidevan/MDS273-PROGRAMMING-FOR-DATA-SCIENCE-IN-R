@@ -1,0 +1,305 @@
+---
+title: "R for Beginners"
+output:
+  html_document:
+    df_print: paged
+---
+
+Describes the packages
+
+```{r}
+demo()
+```
+
+To list the demos in all *available* packages.
+
+```{r}
+demo(package = .packages(all.available = TRUE))
+```
+
+Default working directory path
+
+```{r}
+getwd()
+```
+
+Set NEW working directory path
+
+```{r}
+setwd('C:/Users/Rushi/Downloads')
+getwd()
+```
+
+Help on functions with ? or ?? 
+
+```{r}
+?mean()
+??mean()
+```
+
+Startup tutorial in R documentation
+
+```{r}
+help.start()
+```
+
+Help on the package help(PACKAGE_NAME)
+
+```{r}
+help(plotmath)
+```
+
+Gives an executable example of mean function
+
+```{r}
+example(mean)
+```
+
+Lists all funcs containing atleast "mean()" string
+
+```{r}
+apropos("plot")
+```
+
+Assigning Different Values
+
+```{r}
+x="AMD"
+y=4
+z=4.4
+print(x)
+print(y)
+print(z)
+```
+
+Expressions and assignments in R
+
+```{r}
+x=5
+y=x+10
+y
+```
+
+Listing all user-defined objects
+
+```{r}
+ls()
+```
+
+Printing - Auto/Explicit
+
+```{r}
+a=3
+b=5
+c=9
+sum=a+b+c
+sum # Auto Printing
+print(sum) #Explicit printing
+```
+
+Remove Objects
+
+```{r}
+rm(x,y)
+ls()
+```
+
+Creating vector;checking type, class, is.integer and converting to integer
+
+```{r}
+# Create Vector
+x<-c(1,2,3,4,5,6,7,8,9,10)
+# Check the class of object
+class(x)
+#Check type of object
+typeof(x)
+# Is the value integer or not!
+is.integer(x)
+# Convert any datatype to int
+y=as.integer(x)
+typeof(y)
+```
+
+Assigning Tuple to variable and accessing through index
+
+```{r}
+assign("AMD",c(4,44,444))
+AMD
+AMD[0:3]
+```
+
+Auto Type Casting
+
+```{r}
+# Vectors can store any 1 type, if we assign more than 1 type it converts to higher type
+assign("BEC",c(4,44,444,'D'))
+class(BEC)
+BEC[0:4]
+assign("ABC",c(4,44,4.4))
+class(ABC)
+ABC[0:3]
+```
+
+Vector Operations
+
+```{r}
+c(1,2,3)->x
+x
+x+1
+x*10
+1/x
+```
+
+Extending the vector
+
+```{r}
+y=c(x,c(7,8,9))
+y
+x
+y
+x+y
+```
+
+Task-Create 2 vectors and mul 2nd vector with 3 and combine and find length
+
+```{r}
+assign("a",c(1,2,3,4,5))
+assign("b",c(6,7,8,9,10))
+length(c(a,b*3))
+```
+
+Find the 5th power of any vector
+
+```{r}
+a^5
+```
+
+Sum of all values in a vector
+
+```{r}
+sum(a)
+```
+
+Range of values
+
+```{r}
+range(a)
+```
+
+Mean from vector
+
+```{r}
+mean(a)
+```
+
+Variance of vector
+
+```{r}
+var(a)
+```
+
+Ascending Sort
+
+```{r}
+sort(a)
+```
+
+Descending Sort
+
+```{r}
+sort(a,decreasing=TRUE)
+```
+
+Find Squareroot
+
+```{r}
+sqrt(a)
+```
+
+Sequences - Changing the order of parameters
+
+```{r}
+#Create sequence with steps
+seq(3,100,3) # Display multiples of 3
+```
+
+```{r}
+seq(50,)
+```
+```{r}
+seq(50,by=1,length=100)
+```
+```{r}
+seq(2, 20, by=.2)
+```
+```{r}
+seq(2, 20, length=2)
+```
+```{r}
+seq(2,20, length=5) 
+```
+```{r}
+seq(2, by=1, length=5)
+```
+```{r}
+seq(2, by=1, length=15)
+```
+```{r}
+seq(2, by=2, length=15)
+```
+```{r}
+seq(by=2, length=15,15)
+```
+```{r}
+seq(by=2, length=15,to=15) 
+```
+```{r}
+seq(by=2, length=15,from=15)
+```
+```{r}
+seq(length=51, from=-5, by=.2)
+```
+
+Logical Operators
+
+```{r}
+assign("a",c(1,2,3,4,5,2))
+assign("b",c(2,7,1,4,0,0))
+a&b # And Operation
+a|b # Or Operation
+```
+Check Missing Values i.e. NA/NaN in Data
+
+```{r}
+z=c(NA,1:5,NA,0/0)
+z
+is.na(z) # Returns True where NA(Missing value/s) is found
+is.nan(z) # Returns True if NaN(Not a Number) value is found leading to infinite answer
+```
+Escape Sequence Printing
+
+```{r}
+str="Good Morn!\n This is your fav sender :)\\^.^/"
+print(str) # It prints whatever is embedded with single/double quotes
+writeLines(str) # It executes the escape sequences like \n,\,/...
+```
+Zipping values with/without separator
+
+```{r}
+paste(c("$"),1:10)
+paste(0:3,1:3,sep=",")
+paste(c("x","y","z"),1:10,sep=",")
+```
+Omit *Missing Values* and fetch rest values
+
+```{r}
+vector_with_na=c(NA,0:5,9:10,NA)
+vector_with_na
+# Removes missing values and returns rest values where length of "remove_na"<="vector_with_na"
+remove_na=vector_with_na[!is.na(vector_with_na)]
+remove_na
+# Removes NA values as well as 0s from the vector
+remove_naa=vector_with_na[!is.na(vector_with_na) & vector_with_na>0]
+remove_naa
+```
+
