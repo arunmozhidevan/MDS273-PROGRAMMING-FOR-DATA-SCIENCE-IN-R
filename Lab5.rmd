@@ -1,0 +1,125 @@
+---
+title: "Lab 5 Working with Dataframe and Dataset"
+output: html_notebook
+---
+
+# 1) Create a dataframe of 15 observations with variables Name(char),Reg No(int),Programme (Factor)[levels- IBScDS,IIBScDS,IBScEA,IMScDS],Background(factor)[levels- Science,Commerce,Other],sub1_marks(int),sub2_marks(int),sub3_marks(int),sub4_marks(int),sub5_marks(int).
+```{r}
+x1=c(1:15) # reg no
+x2=letters[1:15] # names
+x3=c('IBScDS','IIBScDS','IBScEA','IMScDS','IBScDS','IIBScDS','IBScEA','IMScDS','IBScDS','IIBScDS','IBScEA','IMScDS','IBScDS','IIBScDS','IBScEA') 
+x4=c('Science','Commerce','Other','Commerce','Other','Science','Science','Commerce','Other','Commerce','Other','Other','Science','Commerce','Other')
+x5=runif(15, min=20, max=99)
+x6=runif(15, min=30, max=99)
+x7=runif(15, min=40, max=99)
+x8=runif(15, min=15, max=99)
+
+max_length <- max(c(length(x1), length(x2), length(x3), length(x4), length(x5)))# Find out maximum length
+max_length
+Stud_Score = data.frame(regno = c(x1,rep(NA, max_length - length(x1))),
+                   name = c(x2, rep(NA, max_length - length(x2))),
+                   programme = c(x3, rep(NA, max_length - length(x3))),
+                   background = c(x4, rep(NA, max_length - length(x4))),
+                   sub1 = c(x5, rep(NA, max_length - length(x5))),
+                   sub2 = c(x6, rep(NA, max_length - length(x6))),
+                   sub3 = c(x7, rep(NA, max_length - length(x7))),
+                   sub4 = c(x8, rep(NA, max_length - length(x8))),
+                   sub5 = c(x5, rep(NA, max_length - length(x5))))
+Stud_Score  # print dataframe
+```
+
+### 1a) Analyze the dataset and summarise.
+```{r}
+summary(Stud_Score)
+```
+
+### 1b) Create a new column AvgResult that finds the average marks of all the students.
+```{r}
+Stud_Score$AvgResult <- rowMeans(Stud_Score[,5:9])
+Stud_Score
+```
+
+### 1c) Find the topper in the class
+```{r}
+Stud_Score[which.max(Stud_Score$AvgResult),]
+```
+
+### 1D) Find the pass percentage of the class –[students above 50 %]
+```{r}
+subset(Stud_Score, AvgResult>50)
+```
+
+### 1E) Create the failure list of the students in another data frame
+```{r}
+Stud_Fail <- data.frame(subset(Stud_Score, AvgResult<50))
+Stud_Fail
+```
+
+### 1F) Prepare the rank list
+```{r}
+Stud_Score[order(-xtfrm(Stud_Score$AvgResult)), ]
+```
+
+# 2) Create a dataframe &#39;Authors&#39; with feature variables name, nation and retired (5 records). Create a second dataframe &#39;Books&#39; with variables B_name, B_title, B_author. Write a program to merge the dataframes based on the author names
+```{r}
+x1=letters[1:5] # names
+x2=c('CN','IN','USA','IN','UAE')  #nation
+x3=runif(5, min=0, max=1000000) # retired
+
+max_length <- max(c(length(x1), length(x2), length(x3)))# Find out maximum length
+max_length
+author = data.frame(name = c(x1,rep(NA, max_length - length(x1))),
+                   nation = c(x2, rep(NA, max_length - length(x2))),
+                   retired = c(x3, rep(NA, max_length - length(x3))))
+author  # print dataframe
+```
+
+# 2) Create a second dataframe &#39;Books&#39; with variables B_name, B_title, B_author. Write a program to merge the dataframes based on the author names
+```{r}
+x1=letters[9:13] # names
+x2=c('AAA','BBB','CCC','DDD','EEE')  #book title
+x3=letters[1:5]
+
+max_length <- max(c(length(x1), length(x2), length(x3)))# Find out maximum length
+max_length
+book = data.frame(bname = c(x1,rep(NA, max_length - length(x1))),
+                   btitle = c(x2, rep(NA, max_length - length(x2))),
+                   bauthor = c(x3, rep(NA, max_length - length(x3))))
+book  # print dataframe
+```
+
+## Merge author and book dataframe 
+```{r}
+merge(book, author, by.x=c('bauthor'), by.y=('name'))
+```
+# 3. Use the function str to examine the structure of the murders object.
+```{r}
+library(dslabs)
+data(murders)
+data <- murders
+data
+```
+
+### 3a). What are the column names used by the data frame for the variables?
+```{r}
+colnames(data)
+```
+
+
+### 3b).Use the accessor $ to extract the state abbreviations and assign them to the object a. What is the class of this object?
+```{r}
+obj <- data$abb
+class(obj)
+```
+
+
+### 3c).Use the square brackets to extract the state abbreviations
+```{r}
+data[,2]
+```
+
+
+### 3d). With one line of code, use the function levels and length to determine the number of regions defined by this dataset.
+```{r}
+unique(data[,3])
+```
