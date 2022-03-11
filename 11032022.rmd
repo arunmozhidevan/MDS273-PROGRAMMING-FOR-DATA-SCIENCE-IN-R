@@ -1,0 +1,26 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+df=data.frame(name=letters[1:5],age=runif(5,min=0,max=99),gender=c('M','F','F','M','F'))
+df
+```
+
+```{r}
+summary(df$name)
+str(df$name)
+```
+```{r}
+summary(df$age)
+str(df$age)
+```
+```{r}
+df[which.max(df$age),]
+```
+
+```{r}
+
+```
+
