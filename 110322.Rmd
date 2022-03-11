@@ -54,9 +54,47 @@ names(df)
 df[2] #2nd column 
 df[2:3,] # 2,3 row of all columns
 df["name"] # name column
-df[2:3,c("age")] #
+df[2:3,c("age")] # 2nd and 3rd row of age column
+```
+### Fetch multiple columns
+```{r}
+df[c("age",'gender')]
+```
+### Fetch multiple columns and can set column names with "column" attribute
+```{r}
+data.frame(df$name,df$age)
+```
+---
+### Help on ChickWeight dataset
+```{r}
+?ChickWeight
+```
+### Extract features
+```{r}
+names(ChickWeight)
+```
+### Use view() to view dataset
+```{r}
+View(ChickWeight)
+```
+### head() | tail() | str() | summary() | frequency() | time() of dataset
+```{r}
+head(ChickWeight) #first 6 records
 ```
 ```{r}
-
+tail(ChickWeight) # last 6 records
 ```
-
+```{r}
+str(ChickWeight) # str of dataset
+```
+```{r}
+summary(ChickWeight) # summary like mean,med, mode etc. of dataset
+```
+```{r}
+#It gives the no. of occurrences of every unique value in the variable.
+frequency(ChickWeight)
+```
+```{r}
+# time() creates the vector of times at which a time series was sampled.
+time(ChickWeight$Time)
+```
