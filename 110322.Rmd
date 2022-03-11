@@ -49,4 +49,14 @@ dim(df)
 ```{r}
 names(df)
 ```
+### Indexing through rows and columns
+```{r}
+df[2] #2nd column 
+df[2:3,] # 2,3 row of all columns
+df["name"] # name column
+df[2:3,c("age")] #
+```
+```{r}
+
+```
 
