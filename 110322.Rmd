@@ -1,13 +1,14 @@
 ---
-title: "R Notebook"
+title: "11/03/2022 DataFrame Practice"
 output: html_notebook
 ---
 
+### Create DataFrame with 3 columns name,age and gender
 ```{r}
 df=data.frame(name=letters[1:5],age=runif(5,min=0,max=99),gender=c('M','F','F','M','F'))
 df
 ```
-
+### Extract details of name, age
 ```{r}
 summary(df$name)
 str(df$name)
@@ -16,8 +17,22 @@ str(df$name)
 summary(df$age)
 str(df$age)
 ```
+### Print details of eldest person
 ```{r}
 df[which.max(df$age),]
 ```
+### Print details of 2nd column
+```{r}
+df[,2]
+```
+### Remove third, forth row
+```{r}
+df
+df[-c(3,4), ]
+```
 
+### Print str of df
+```{r}
+str(df)
+```
 
