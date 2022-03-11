@@ -29,9 +29,24 @@ df[,2]
 ```{r}
 df[,-4]
 ```
-
 ### Print str of df
 ```{r}
 str(df)
+```
+### Number od columns in dataframe
+```{r}
+ncol(df)
+```
+### Number of rows in dataframe
+```{r}
+nrow(df)
+```
+### Dimension of DataFrame
+```{r}
+dim(df)
+```
+### Display column names
+```{r}
+names(df)
 ```
 
