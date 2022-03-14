@@ -98,3 +98,28 @@ frequency(ChickWeight)
 # time() creates the vector of times at which a time series was sampled.
 time(ChickWeight$Time)
 ```
+### Filter data with Time=0 and call new data frame chick0
+```{r}
+chick0=ChickWeight[ChickWeight$Time==0,]
+head(chick0)
+```
+### Sorting - order() Dataframe by variable
+```{r}
+chick0[order(chick0$weight),]
+```
+### It will free those features i.e. no need to access using dollar sign
+```{r}
+attach(ChickWeight)
+```
+### Access features by its name
+```{r}
+Diet
+```
+```{r}
+chick0[order(weight),]
+```
+
+```{r}
+chick0[order(weight & Time==0),]
+```
+
