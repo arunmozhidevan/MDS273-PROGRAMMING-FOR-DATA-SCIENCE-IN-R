@@ -29,14 +29,10 @@ as.character(names(prodMap)) #get keys
 ```
 ### New categories replacement
 ```{r}
+
 column_to_replace=as.character(names(prodMap))
 replacement_value=as.character(prodMap)
 #rides <- as.data.frame(t(rides))
-replace(rides$ProductType,replacedata,datatobereplaced)
-data.frame(rides$ProductType)
-rides['ProductType']
-list(column_to_replace)
-rides[rides$ProductType == list(column_to_replace)] <- list(replacement_value)
-data.frame(rides$ProductType %>% list(column_to_replace))
+replace(rides$ProductType,column_to_replace,replacement_value)
 ```
 
