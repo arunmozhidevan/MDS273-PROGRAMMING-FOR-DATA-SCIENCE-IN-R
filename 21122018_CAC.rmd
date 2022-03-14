@@ -36,3 +36,67 @@ replacement_value=as.character(prodMap)
 replace(rides$ProductType,column_to_replace,replacement_value)
 ```
 
+
+```{r}
+unique(rides$ProductType)
+```
+
+```{r}
+rides[rides$ProductType == "uberX VIP",2] = 'UberX'
+```
+
+```{r}
+rides[rides$ProductType == "UberBLACK",2] = 'Black'
+```
+
+```{r}
+rides[rides$ProductType == "POOL",2] = 'Pool'
+```
+
+```{r}
+rides[rides$ProductType == "VIP",2] = 'UberX'
+```
+
+```{r}
+rides[rides$ProductType == "VIP",2] = 'UberX'
+```
+
+```{r}
+rides[rides$ProductType == "POOL: MATCHED",2] = 'Pool'
+```
+
+```{r}
+rides[rides$ProductType == "UberBLACK",2] = 'Black'
+```
+
+```{r}
+rides[rides$ProductType == "uberx",2] = 'UberX'
+```
+
+```{r}
+rides[rides$ProductType == "uberPOOL",2] = 'Pool'
+```
+
+```{r}
+rides[rides$ProductType == "uberPOOL: MATCHED",2] = 'Pool'
+```
+
+```{r}
+rides[rides$ProductType == "Pool: MATCHED",2] = 'Pool'
+```
+
+```{r}
+rides[rides$ProductType == "uberX",2] = 'UberX'
+```
+
+
+```{r}
+for(i in unique(rides$ProductType)){
+  print(i)
+}
+```
+
+```{r}
+rides
+```
+
