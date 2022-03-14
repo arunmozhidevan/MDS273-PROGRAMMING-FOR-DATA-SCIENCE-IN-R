@@ -1,0 +1,42 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+### Read Uber Ride Data choosing a file
+```{r}
+rides=read.csv(file.choose())
+```
+### View the whole dataset in R
+```{r}
+View(rides)
+```
+### Get Dataset Info
+```{r}
+str(rides)
+```
+# Data Cleaning:
+## While analyzing the first column of the division, I clearly saw that more work was needed, because I could find different values ​​referring to the same category. After that, I summarized the first 15 paragraphs out of 5.
+
+### Checking categories in product_type column
+```{r}
+rides %>% group_by(ProductType) %>% summarise(value_counts = n())
+```
+### Categories Reclassification
+```{r}
+prodMap= c("UberX"="UberX","uberX"="UberX","uberX VIP"="UberX","VIP"="UberX","POOL"="Pool","POOL: MATCHED"="Pool","UberBLACK"="Black","uberx"="UberX","uberPOOL"="Pool","uberPOOL: MATCHED"="Pool","Pool: MATCHED"="Pool")
+as.character(prodMap)# get values
+as.character(names(prodMap)) #get keys
+```
+### New categories replacement
+```{r}
+column_to_replace=as.character(names(prodMap))
+replacement_value=as.character(prodMap)
+#rides <- as.data.frame(t(rides))
+replace(rides$ProductType,replacedata,datatobereplaced)
+data.frame(rides$ProductType)
+rides['ProductType']
+list(column_to_replace)
+rides[rides$ProductType == list(column_to_replace)] <- list(replacement_value)
+data.frame(rides$ProductType %>% list(column_to_replace))
+```
+
