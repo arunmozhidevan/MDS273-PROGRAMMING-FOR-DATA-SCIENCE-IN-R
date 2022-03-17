@@ -1,0 +1,255 @@
+---
+title: "EDA on Dataset"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+This is a notebook used to explore data uaing in-built functions and do some EDA over data. 
+
+# Use Data Explorer to Get a Greater Summary View
+
+
+```{r}
+#Bring in the data set
+
+library(readr)
+
+df= read_csv('C:\\Users\\Rushi\\Desktop\\FinalData.csv', col_names = TRUE)
+
+```
+
+
+# Use the head command to get a preview of the data set
+
+The default is 6 rows, but let's select 10 just to get a bigger picture
+
+```{r}
+head(df, 10)
+```
+
+```{r}
+# Rows, Columns
+dim(df)
+
+#Displays the type and a preview of all columns as a row so that it's very easy to take in.
+
+library(dplyr)
+glimpse(df)
+
+
+```
+
+
+# Summary Statistics
+
+It shows the summary statistics for numerical values
+
+```{r}
+summary(df)
+```
+
+
+# Use Skimr to Display Summary Statistics for the variables
+
+This has same as above + missing and a histogram.  Also, it has some additional statistics of non-numerical values.
+```{r}
+library(skimr)
+skim(df)
+```
+
+
+
+---
+title: "EDA in R using the inspectdf package"
+---
+
+```{r}
+View(df)
+```
+
+Scatter Plot on dataset
+
+```{r}
+pairs(~HrsHomework + ScreenTime + Sleep + PhysActive, data = df,main ="Scatterplot Matrix")
+```
+Barchart on dataset
+
+```{r}
+# barchart with added parameters
+barplot(df$Sleep,
+main = "Student Outcomes",
+xlab = "Sleep",
+ylab = "Count",
+col = "darkred",
+horiz = FALSE)
+```
+
+```{r}
+table(df$Horoscope)
+```
+Boxplot on dataset columns
+
+```{r}
+boxplot(Sleep ~ HrsHomework, data = df,
+        xlab = "Sleep",
+        ylab = "Hrs of Homework",
+        main = "Sleep vs Hours of Homework")
+```
+
+# Install and load the inspectdf package
+
+Allows you to understand and visualize column types, sizes, values, value imbalance & distributions as well as correlations.  Further to this, it allows you to very easily perform any of the above features for an individual data frame, or to compare the differences between two data frames.  
+
+```{r setup, include=FALSE}
+
+#First install devtools to allow you to install inspectdf from github
+#install.packages("devtools")
+#library(devtools)
+
+# install and load the package - https://github.com/alastairrushworth/inspectdf
+
+#devtools::install_github("alastairrushworth/inspectdf")
+library(inspectdf)
+
+#install.packages("tidyverse")
+library(tidyverse)
+```
+
+# Create the necessary data frames
+
+We need three data frames.  We need one data frame with the complete data set.  We simply rename df to allGrades. We also need two subsetted data sets to leverage the packages easy data frame comparison features.  We create the data frames oldGrades (6-8) and youngGrades (3-5).
+
+```{r}
+allGrades <- df
+
+oldGrades <- allGrades %>% 
+  filter(Grade > 5)
+
+youngGrades <- allGrades %>% 
+  filter(Grade < 6)
+
+ggplot(oldGrades, aes(x=Grade)) + geom_histogram()
+ggplot(youngGrades, aes(x=Grade)) + geom_histogram()
+
+```
+
+# Run through the functions of the inspectdf package
+
+Simply pass in a dataframe, or two (for comparisons) and set show_plot = TRUE.  The output will include bot - the raw data and a visualization.  
+
+## 1 Evaluate the data frame column types with the inspect_types() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_types(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_types(youngGrades, oldGrades) %>% show_plot()
+```
+
+## 2 Evaluate the data frame column memory usage with the inspect_mem() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_mem(allGrades) %>% show_plot()
+```
+
+
+## 3 Evaluate the na prevelance within the data frame with the inspect_na() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_na(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_na(youngGrades, oldGrades) %>% show_plot()
+```
+
+
+## 4 Evaluate the distribution of the numerical columns with the inspect_num() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_num(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+#inspect_num(youngGrades, oldGrades) %>% show_plot()
+```
+
+## 5 Evaluate for any possible categorical column imbalance with inspect_imb() function to identify factors which might be overly prevalent.
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_imb(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_imb(youngGrades, oldGrades) %>% show_plot()
+```
+
+## 6 Evaluate the categorical column distribution with the inspect_cat() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_cat(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_cat(youngGrades, oldGrades) %>% show_plot()
+```
+
+## 7 Evaluate the column correlations with the inspect_cor() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_cor(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_cor(youngGrades, oldGrades) %>% show_plot()
+```
+
+## Learnings - 
+inspectdf is the package which is used for EDA because it’s got a lot of functionality and it’s incredibly straightforward to use. In short, it allows you to understand and visualize column types, sizes, values, value imbalance & distributions as well as correlations. 
+
+For EDA preparation we created 3 data frames:
+- allGrades is the full data frame 
+- oldGrades includes a subset of the survey results for all grades greater than 5.This includes grades 6-8.
+- youngGrades includes a subset of the survey results for all grades less than 6. This includes grades 3-5.
+
+
+We can use the inspect_types() command to very easily see a breakdown of character vs numeric variables.
+
+The inspect_na() function shows us the percentage of na values for each variable.  The comparison view is quite neat as it highlights variables with unequal na percentages.  
+
+Similar to the inspect_num() function, the inspect_imb() function allows us to understand the a bit about the value distribution for our categorical values.  It shows the most prevalent values for each variable and displays how prevalent they are.  
+
+A step further from inspect_imb(), inspect_cat() allows us to visualize the full distribution of our categorical values.  Note that if there are a lot of unique values in a particular category, it’s not expected that you should see every value.  However, it quite nicely surfaces common values.  
+
+We finish off our review with the inspect_cor() function.  This allows us to see the Pearson correlation coefficient to see how the variables may relate to one another. 
+
+Remember - The Pearson correlation coefficient, r, can take a range of values from +1 to -1. A value of 0 indicates that there is no association between the two variables. A value greater than 0 indicates a positive association; that is, as the value of one variable increases, so does the value of the other variable.
+
