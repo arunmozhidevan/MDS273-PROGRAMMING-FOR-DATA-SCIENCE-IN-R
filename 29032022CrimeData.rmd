@@ -66,4 +66,11 @@ The variables of the df object returned by describe() are as follows.
 library(dlookr)
 describe(df)
 ```
+### EDA of bivariate data
+
+Calculation of correlation coefficient using **correlate()**
+correlate() calculates the correlation coefficient of all combinations of df numerical variables as follows:
+```{r}
+correlate(df)
+```
 
