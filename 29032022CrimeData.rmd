@@ -73,4 +73,36 @@ correlate() calculates the correlation coefficient of all combinations of df num
 ```{r}
 correlate(df)
 ```
+### **Inference -** We can observe ExpenditureYear0 had high correlation
 
+### Visualization of the correlation matrix using plot_correlate()
+plot_correlate() visualizes the correlation matrix.
+```{r}
+plot_correlate(df)
+```
+### The plot_correlate() function also supports the group_by() function syntax in the dplyr package.
+```{r}
+library('magrittr')
+library('dplyr')
+df %>%
+  filter(MoreMales == '0') %>%
+  group_by(Southern) %>%
+  plot_correlate(CrimeRate)
+```
+## Visualization of normality of numerical variables using **plot_normality()**
+plot_normality() visualizes the normality of numeric data.
+
+The information visualized by plot_normality() is as follows.:
+
+>1. Histogram of original data
+>2. Q-Q plot of original data
+>3. histogram of log transformed data
+>4. Histogram of square root transformed data
+
+In the data analysis process, it often encounters numerical data that follows the power-law distribution. Since the numerical data that follows the power-law distribution is converted into a normal distribution by performing the log or sqrt transformation, so draw a histogram of the log and sqrt transformed data.
+
+**plot_normality()** can also specify several variables like normality() function.
+```{r}
+# Select columns by name
+plot_normality(df, CrimeRate, Wage)
+```
