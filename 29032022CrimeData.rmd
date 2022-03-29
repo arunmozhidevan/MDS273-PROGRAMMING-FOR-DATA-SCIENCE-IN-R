@@ -1,0 +1,69 @@
+---
+title: "EDA on crime dataset"
+output: html_notebook
+---
+# dlookr Package
+Introduce dlookr package for explore data to understand the data and find scenarios for performing the analysis.
+
+The dlookr package makes these steps fast and easy:
+
+**(+) dlookr increases synergy with dplyr. Particularly in data exploration and data wrangle, it increases the efficiency of the tidyverse package group.**
+
+> ###### 1. Performs an data diagnosis or automatically generates a data diagnosis report.
+> ###### 2. **Discover data in a variety of ways, and automatically generate EDA(exploratory data analysis) report.**
+> ###### 3. Impute missing values and outliers, resolve skewed data, and categorize continuous variables into categorical variables. And generates an automated report to support it.
+
+```{r}
+library(readr)
+df <- read_csv("C:/Users/Rushi/Downloads/Crime_R.csv")
+head(df)
+str(df)
+```
+### Use Skimr to Display Summary Statistics for the variables
+
+This has same as above + missing and a histogram.  Also, it has some additional statistics of non-numerical values.
+```{r}
+library(skimr)
+skim(df)
+```
+### Drop unecessary columns holding with col_name10 from dataset
+```{r}
+df <- df[, -c(15:27)] # delete columns 5 through 7
+colnames(df)
+```
+
+##### The following is a list of the *EDA functions* included in the dlookr package.:
+
+>##### 1. **describe()** provides descriptive statistics for numerical data.
+>##### 2. **normality()** and plot_normality() perform normalization and visualization of numerical data.
+>##### 3. **correlate()** and plot_correlate() calculate the correlation coefficient between two numerical data and provide visualization.
+>##### 4. **target_by()** defines the target variable and relate() describes the relationship with the variables of interest corresponding to the target variable.
+>##### 5. **plot.relate()** visualizes the relationship to the variable of interest corresponding to the destination variable.
+>##### 6. **eda_report()** performs an exploratory data analysis and reports the results.
+
+## **Univariate data EDA**
+---
+### Calculating descriptive statistics using describe()
+
+ describe() computes descriptive statistics for numerical data. The descriptive statistics help determine the distribution of numerical variables.
+The variables of the df object returned by describe() are as follows.
+
+**n** : number of observations excluding missing values
+**na** : number of missing values
+**mean** : arithmetic average
+**sd** : standard deviation
+**se_mean** : standard error mean. sd/sqrt(n)
+**IQR** : interquartile range (Q3-Q1)
+**skewness** : skewness
+**kurtosis** : kurtosis
+**p25** : Q1. 25% percentile
+**p50** : median. 50% percentile
+**p75** : Q3. 75% percentile
+**p01, p05, p10, p20, p30** : 1%, 5%, 20%, 30% percentiles
+**p40, p60, p70, p80** : 40%, 60%, 70%, 80% percentiles
+**p90, p95, p99, p100** : 90%, 95%, 99%, 100% percentiles
+```{r}
+library(dlookr)
+describe(df)
+```
+
