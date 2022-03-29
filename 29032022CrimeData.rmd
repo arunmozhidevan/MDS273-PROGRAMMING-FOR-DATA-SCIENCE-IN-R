@@ -106,3 +106,26 @@ In the data analysis process, it often encounters numerical data that follows th
 # Select columns by name
 plot_normality(df, CrimeRate, Wage)
 ```
+```{r}
+# Select single column
+plot_normality(df, CrimeRate)
+```
+## EDA based on target variable
+**Definition of target variable**
+To perform EDA based on target variable, you need to create a target_by class object. target_by() creates a target_by class with an object inheriting data.frame or data.frame. target_by() is similar to group_by() in dplyr which creates grouped_df. The difference is that you specify only one variable.
+
+The following is an example of specifying CrimeRate as target variable in Crime data.frame.:
+```{r}
+target <- target_by(df, CrimeRate)
+target
+```
+## EDA when target variable is categorical variable
+**CASES WHERE PREDICTORS ARE NUMERIC VARIABLE**
+> relate() shows the relationship between the target variable and the predictor. The following example shows the relationship between Education and the target variable CrimeRate. The predictor Education is a numeric variable. In this case, the descriptive statistics are shown for each level of the target variable.
+
+```{r}
+# If the variable of interest is a numerical variable
+dff <- relate(target, Education)
+dff
+```
+
