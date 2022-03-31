@@ -1,0 +1,70 @@
+---
+title: "R Notebook for Linear Regression"
+output: html_notebook
+---
+y=B0+B1X1+B2X2+..+BnXn
+```{r}
+data=mtcars
+data
+```
+```{r}
+lm(mpg~disp,data=data)
+```
+```{r}
+summary(lm(mpg~disp,data=data))
+```
+## **Multiple Linear Regression**
+```{r}
+summary(lm(mpg~disp + gear, data = data)) #Review the results
+```
+```{r}
+library(dlookr)
+correlate(data)
+```
+```{r}
+pairs(data)
+```
+```{r}
+lmdist = lm(mpg~disp, data = data) #Create the linear regression
+plot(data$disp,data$mpg, col = "red")+abline(lmdist) #Add a regression line
+```
+```{r}
+plot(data$disp,data$mpg,pch=16, col = "red")+abline(coef(data)) #Add a regression line
+```
+```{r}
+par(mfrow=c(1,2))
+plot(density(data$mpg))
+polygon(density(data$mpg),col='purple')
+
+plot(density(data$disp))
+polygon(density(data$disp),col='#CCFF00')
+```
+## **Predict the model**
+```{r}
+lmdist = lm(mpg~disp, data = data) #Create the linear regression
+predict(lmdist)
+```
+## **Scatter Plot with Regression line**
+```{r}
+library(ggplot2)
+ggplot(data,aes(x = disp, y = mpg)) + geom_point() +geom_smooth(method = "lm")
+```
+
+```{r}
+library(dplyr)
+library(tidypredict)
+
+df <- mtcars %>%
+  mutate(char_cyl = paste0("cyl", cyl)) %>%
+  select(mpg, wt, char_cyl, am) 
+df
+
+model <- lm(mpg ~ wt + char_cyl, offset = am, data = df)
+
+df %>% tidypredict_to_column(model, add_interval = TRUE) %>% head(10)
+```
+
+```{r}
+df
+```
+
