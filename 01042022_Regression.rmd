@@ -1,0 +1,66 @@
+---
+title: "R Notebook Income Dataset"
+output: html_notebook
+---
+## Readcsv file
+```{r}
+```{r}
+library(readr)
+df <- read_csv("C:/Users/Rushi/Downloads/income.csv")[,-c(1)]
+head(df)
+str(df)
+```
+### EDA of bivariate data
+
+Calculation of correlation coefficient using **correlate()**
+correlate() calculates the correlation coefficient of all combinations of df numerical variables as follows:
+```{r}
+library(dlookr)
+describe(df)
+correlate(df)
+```
+## EDA based on target variable
+**Definition of target variable**
+To perform EDA based on target variable, you need to create a target_by class object. target_by() creates a target_by class with an object inheriting data.frame or data.frame. target_by() is similar to group_by() in dplyr which creates grouped_df. The difference is that you specify only one variable.
+
+The following is an example of specifying CrimeRate as target variable in Crime data.frame.:
+```{r}
+target <- target_by(df, happiness)
+target
+```
+## EDA when target variable is categorical variable
+**CASES WHERE PREDICTORS ARE NUMERIC VARIABLE**
+> relate() shows the relationship between the target variable and the predictor. The following example shows the relationship between happiness and the target variable income. The predictor happiness is a numeric variable. In this case, the descriptive statistics are shown for each level of the target variable.
+
+```{r}
+# If the variable of interest is a numerical variable
+dff <- relate(target, income)
+dff
+```
+## Find summary of the linear model
+```{r}
+summary(lm(happiness~income,df))
+```
+
+## Plotting normality of target variable
+```{r}
+plot_normality(df, happiness)
+```
+```{r}
+lmdist = lm(happiness~income, df) #Create the linear regression
+plot(df$income,df$happiness, col = "yellow")+abline(lmdist) #Add a regression line
+```
+Find the best fitting for the target variable
+```{r}
+library(dplyr)
+library(tidypredict)
+model <- lm(happiness~income, df)
+df %>% tidypredict_to_column(model, add_interval = TRUE) %>% head(10)
+```
+### **Inference -** We can observe happiness has high correlation
+
+### Visualization of the correlation matrix using plot_correlate()
+plot_correlate() visualizes the correlation matrix.
+```{r}
+plot_correlate(df)
+```
