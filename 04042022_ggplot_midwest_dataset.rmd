@@ -1,0 +1,106 @@
+---
+title: "GGPlot on MidWest Dataset"
+output: html_notebook
+---
+
+```{r}
+library('readr')
+df = read_csv('C:\\Users\\Rushi\\Desktop\\midwest.csv')
+head(df,10)
+```
+```{r}
+library(ggplot2)
+ggplot(df, aes(x=area, y=poptotal)) + geom_point()
+```
+We got a basic scatterplot, where each point represents a county. 
+
+Let's just add a smoothing layer using geom_smooth(method='lm'). 
+Since the method is set as lm (short for linear model), it draws the line of best fit.
+```{r}
+g <- ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method="lm",se=FALSE) # set se=FALSE to turnoff confidence bands
+plot(g)
+
+```
+You might have noticed that majority of points lie in the bottom of the chart which doesn't really look nice. So, let's change the Y-axis limits to focus on the lower half.
+
+## **Adjusting the X and Y axis limits**
+### Method 1: By deleting the points outside the range
+> This will change the lines of best fit or smoothing lines as compared to the original data.
+> This can be done by **xlim() and ylim()**. You can pass a numeric vector of length 2 (with max and min values) or just the max and min values itself.
+
+```{r}
+g <- ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method="lm") # set se=FALSE to turnoff confidence bands
+
+# Delete the points outside the limits
+g + xlim(c(0, 0.1)) + ylim(c(0, 1000000)) # deletes points
+
+```
+> In this case, the chart was not built from scratch but rather was built on top of g. This is because, 
+the previous plot was stored as g, a ggplot object, which when called will reproduce the original 
+plot. 
+> Did you notice that the line of best fit became more horizontal compared to the original plot? This 
+is because, when using xlim() and ylim(), the points outside the specified range are deleted and 
+will not be considered while drawing the line of best fit
+
+### Method 2: Zooming In
+The other method is to change the X and Y axis limits by zooming in to the region of interest 
+without deleting the points. This is done using **coord_cartesian()**.
+```{r}
+g <- ggplot(midwest, aes(x=area, y=poptotal)) + geom_point() + geom_smooth(method="lm") # set se=FALSE to turnoff confidence bands
+# Zoom in without deleting the points outside the limits. 
+# As a result, the line of best fit is the same as the original plot.
+g1 <- g + coord_cartesian(xlim=c(0,0.1), ylim=c(0, 1000000)) # zooms in
+plot(g1)
+
+```
+Since all points were considered, the line of best fit did not change.
+## **How to Change the Title and Axis Labels**
+> I have stored this as g1. Let's add the plot title and labels for X and Y axis. This can be done in one go using the labs() function with title, x and y arguments. Another option is to use the **ggtitle(), xlab() and ylab()**.
+
+```{r}
+# Add Title and Labels
+g1 + labs(title="Area Vs Population", subtitle="From midwest dataset", y="Population", x="Area", caption="Midwest Demographics", alt = 'midwest dataset')
+```
+```{r}
+# or
+g1+ggtitle("Area Vs Population", subtitle="From midwest dataset")+xlab("Area") + ylab("Population")
+```
+Full Plot Call
+```{r}
+# Full Plot call
+library(ggplot2)
+ggplot(midwest, aes(x=area, y=poptotal)) +
+ geom_point() +
+ geom_smooth(method="lm") +
+ coord_cartesian(xlim=c(0,0.1), ylim=c(0, 1000000)) +
+ labs(title="Area Vs Population", 
+      subtitle="From midwest dataset",
+      y="Population", 
+      x="Area", 
+      caption="Midwest Demographics")
+```
+## **How to Change the Color and Size of Points**
+```{r}
+ggplot(midwest, aes(x=area, y=poptotal)) +
+ geom_point(col="pink", size=3) + # Set static color and size for points
+ geom_smooth(method="lm", col="firebrick") + # change the color of line
+ coord_cartesian(xlim=c(0, 0.1), ylim=c(0, 1000000)) +
+ labs(title="Area Vs Population", 
+      subtitle="From midwest dataset",
+      y="Population", 
+      x="Area", 
+      caption="Midwest Demographics")
+
+
+```
+## **How to Change the Color To Reflect Categories in Another Column?**
+```{r}
+gg <- ggplot(midwest, aes(x=area, y=poptotal)) +
+ geom_point(aes(col=state), size=3) + # Set color to vary based on state categories.
+ geom_smooth(method="lm", col="firebrick", size=2) +
+ coord_cartesian(xlim=c(0, 0.1), ylim=c(0, 1000000)) +
+ labs(title="Area Vs Population", subtitle="From midwest dataset", y="Population"
+, x="Area", caption="Midwest Demographics")
+plot(gg)
+```
+
