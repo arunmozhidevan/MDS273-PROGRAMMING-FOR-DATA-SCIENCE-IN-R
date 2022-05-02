@@ -1,0 +1,44 @@
+---
+title: "R Notebook - Logistic Regression"
+output: html_notebook
+---
+
+```{r}
+input=mtcars
+head(input)
+```
+```{r}
+names(input)
+```
+```{r}
+library(corrplot)
+correlations <- cor(input[,2:11])
+corrplot(correlations, method="circle")
+```
+```{r}
+library(dlookr)
+correlate(input)
+```
+
+```{r}
+am.data = glm(formula=am~cyl + hp + wt, data=input, family = binomial)
+summary(am.data)
+```
+
+```{r}
+glm.probs <- predict(am.data,type = "response")
+glm.probs[1:5]
+```
+
+```{r}
+round(glm.probs[1:5])
+```
+
+```{r}
+ifelse(glm.probs > 0.5, 1, 0)
+```
+
+```{r}
+table(ifelse(glm.probs > 0.5, 1, 0))
+```
+
