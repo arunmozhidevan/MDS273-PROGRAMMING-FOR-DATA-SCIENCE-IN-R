@@ -1,0 +1,50 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+## **Install Tidyverse, Caret, RPart for Recursive Partioning Decision Trees**
+```{r setup='false'}
+library(tidyverse)
+library(caret)
+library(rpart)
+```
+
+## **Load iris**
+```{r}
+df=iris
+df
+```
+## **Check the data**
+```{r}
+sum(is.na(df))
+sum(duplicated(df))
+```
+## **Rpart(Recursive partitioning is a statistical method for multivariable analysis)** is a powerful machine learning library in R that is used for building classification and regression trees. This library implements recursive partitioning and is very easy to use
+```{r}
+# species-dependent ad '.' is for all the columns in iris dataset, 'class' = classification, 'anova' = regression
+names(df)
+model=rpart(Species ~., df, method='class')
+par(xpd=NA) # print tree neatly according to machine
+plot(model)
+text(model,col='red')
+
+```
+## **Printing model - Gives roots(alike if...else)**
+```{r}
+print(model)
+```
+## Predicts the classification value based upon thw values included from the decision tree model
+```{r}
+library(magrittr)
+dff=data.frame(
+  Sepal.Length=15.5, Sepal.Width = 3.0,
+  Petal.Length = 5.2, Petal.Width = 2.0 # check decision tree for pletalength>2.45 and petalwidth>1.75
+)
+model %>% predict(dff,"class") # piping and predicting
+```
+## Better viz for decision trees
+```{r}
+library(rpart.plot)
+rpart.plot(model)
+```
+
