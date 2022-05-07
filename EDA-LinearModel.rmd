@@ -1,0 +1,437 @@
+---
+title: "EDA and Linear Model on Dataset"
+output:
+  html_document: default
+---
+
+This is a notebook used to explore data uaing in-built functions and do some EDA and model preparation over data. 
+
+# Use Data Explorer to Get a Greater Summary View
+
+```{r}
+#Bring in the data set
+
+library(readr)
+
+df= read_csv('C:\\Users\\Rushi\\Desktop\\FinalData.csv', col_names = TRUE)
+
+```
+
+
+# Use the head command to get a preview of the data set
+
+The default is 6 rows, but let's select 10 just to get a bigger picture
+
+```{r}
+df
+```
+
+```{r}
+# Rows, Columns
+dim(df)
+
+#Displays the type and a preview of all columns as a row so that it's very easy to take in.
+
+library(dplyr)
+glimpse(df)
+
+
+```
+
+
+# Summary Statistics
+
+It shows the summary statistics for numerical values
+
+```{r}
+summary(df)
+```
+
+
+# Use Skimr to Display Summary Statistics for the variables
+
+This has same as above + missing and a histogram.  Also, it has some additional statistics of non-numerical values.
+```{r}
+library(skimr)
+skim(df)
+```
+# Indtroduce function
+```{r}
+library(DataExplorer)
+introduce(df)
+```
+# Get a Full Data Summary Report
+
+It will produce a html file with the basic statistics, structure, missing data, distribution visualizations, correlation matrix and principal component analysis for your data frame!
+
+```{r echo='false'}
+library(DataExplorer)
+#DataExplorer::create_report(df)
+```
+
+
+# Vis_dat() function of the visdat package - used to visualize the data type and missing data within a data frame. 
+
+```{r}
+#install.packages("devtools")
+#devtools::install_github("ropensci/visdat")
+library(visdat)
+vis_miss(df)
+```
+
+```{r}
+vis_dat(df)
+```
+
+---
+title: "EDA in R using the inspectdf package"---
+
+# Install and load the inspectdf package
+
+Allows you to understand and visualize column types, sizes, values, value imbalance & distributions as well as correlations.  Further to this, it allows you to very easily perform any of the above features for an individual data frame, or to compare the differences between two data frames.  
+
+```{r setup, include=FALSE}
+
+#First install devtools to allow you to install inspectdf from github
+#install.packages("devtools")
+#library(devtools)
+
+# install and load the package - https://github.com/alastairrushworth/inspectdf
+
+#devtools::install_github("alastairrushworth/inspectdf")
+library(inspectdf)
+
+#install.packages("tidyverse")
+library(tidyverse)
+```
+
+# Create the necessary data frames
+
+We need three data frames.  We need one data frame with the complete data set.  We simply rename df to allGrades. We also need two subsetted data sets to leverage the packages easy data frame comparison features.  We create the data frames oldGrades (6-8) and youngGrades (3-5).
+
+```{r}
+allGrades <- df
+
+oldGrades <- allGrades %>% 
+  filter(Grade > 5)
+
+youngGrades <- allGrades %>% 
+  filter(Grade < 6)
+
+ggplot(oldGrades, aes(x=Grade)) + geom_histogram()
+ggplot(youngGrades, aes(x=Grade)) + geom_histogram()
+
+```
+
+# Run through the functions of the inspectdf package
+
+Simply pass in a dataframe, or two (for comparisons) and set show_plot = TRUE.  The output will include bot - the raw data and a visualization.  
+
+## 1 Evaluate the data frame column types with the inspect_types() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_types(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_types(youngGrades, oldGrades) %>% show_plot()
+```
+
+## 2 Evaluate the data frame column memory usage with the inspect_mem() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_mem(allGrades) %>% show_plot()
+```
+
+## 3 Evaluate the na prevelance within the data frame with the inspect_na() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_na(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_na(youngGrades, oldGrades) %>% show_plot()
+```
+
+
+## 4 Evaluate the distribution of the numerical columns with the inspect_num() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_num(allGrades) %>% show_plot()
+```
+## 5 Evaluate for any possible categorical column imbalance with inspect_imb() function to identify factors which might be overly prevalent.
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_imb(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_imb(youngGrades, oldGrades) %>% show_plot()
+```
+
+## 6 Evaluate the categorical column distribution with the inspect_cat() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_cat(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_cat(youngGrades, oldGrades) %>% show_plot()
+```
+
+## 7 Evaluate the column correlations with the inspect_cor() function
+
+### a) Evaluate the full data frame: allGrades
+
+```{r}
+inspect_cor(allGrades) %>% show_plot()
+```
+
+### b) Compare between youngGrades and oldGrades
+
+```{r}
+inspect_cor(youngGrades, oldGrades) %>% show_plot()
+```
+# EDA using esquisse package
+```{r}
+#To get the data
+library(yarrr)
+
+#To get the exploratory package
+library(esquisse)
+
+#To launch the UI and explore the pirates data
+#esquisse::esquisser(df, viewer = "browser")
+```
+# Label Encoding for Categorical Columns
+```{r}
+library('CatEncoders')
+gen = c(unique(df$Gender))
+lab_enc = LabelEncoder.fit(gen)
+df$Gender = transform(lab_enc, c(df$Gender))
+
+hor = c(unique(df$Horoscope))
+lab_enc = LabelEncoder.fit(hor)
+df$Horoscope = transform(lab_enc, c(df$Horoscope))
+
+sub = c(unique(df$Subject))
+lab_enc = LabelEncoder.fit(sub)
+df$Subject = transform(lab_enc, c(df$Subject))
+
+intext = c(unique(df$IntExt))
+lab_enc = LabelEncoder.fit(intext)
+df$IntExt = transform(lab_enc, c(df$IntExt))
+
+optpest = c(unique(df$OptPest))
+lab_enc = LabelEncoder.fit(optpest)
+df$OptPest = transform(lab_enc, c(df$OptPest))
+
+sp1 = c(unique(df$SpendTime1))
+lab_enc = LabelEncoder.fit(sp1)
+df$SpendTime1 = transform(lab_enc, c(df$SpendTime1))
+
+sp2 = c(unique(df$SpendTime2))
+lab_enc = LabelEncoder.fit(sp2)
+df$SpendTime2 = transform(lab_enc, c(df$SpendTime2))
+
+s1 = c(unique(df$Self1))
+lab_enc = LabelEncoder.fit(s1)
+df$Self1 = transform(lab_enc, c(df$Self1))
+
+s2 = c(unique(df$Self2))
+lab_enc = LabelEncoder.fit(s2)
+df$Self2 = transform(lab_enc, c(df$Self2))
+
+career = c(unique(df$Career))
+lab_enc = LabelEncoder.fit(career)
+df$Career = transform(lab_enc, c(df$Career))
+
+superpower = c(unique(df$Superpower))
+lab_enc = LabelEncoder.fit(superpower)
+df$Superpower = transform(lab_enc, c(df$Superpower))
+
+df
+```
+# Fitting the model
+```{r}
+library(corrplot)
+corrplot(cor(df[,-1]), addCoef.col = "black", number.cex=0.5) 
+```
+# Removing Missing Values
+```{r}
+df$Self2[is.na(df$Self2)]<-mean(df$Self2,na.rm=TRUE)
+df$Subject[is.na(df$Subject)]<-mean(df$Subject,na.rm=TRUE)
+df$Career[is.na(df$Career)]<-mean(df$Career,na.rm=TRUE)
+df$Self1[is.na(df$Self1)]<-mean(df$Self1,na.rm=TRUE)
+df$Superpower[is.na(df$Superpower)]<-mean(df$Superpower,na.rm=TRUE)
+df$PhysActive[is.na(df$PhysActive)]<-mean(df$PhysActive,na.rm=TRUE)
+df$HrsHomework[is.na(df$HrsHomework)]<-mean(df$HrsHomework,na.rm=TRUE)
+df$ScreenTime[is.na(df$ScreenTime)]<-mean(df$ScreenTime,na.rm=TRUE)
+df$Sleep[is.na(df$Sleep)]<-mean(df$Sleep,na.rm=TRUE)
+df$SpendTime1[is.na(df$SpendTime1)]<-mean(df$SpendTime1,na.rm=TRUE)
+df$Grade[is.na(df$Grade)]<-mean(df$Grade,na.rm=TRUE)
+
+vis_dat(df)
+```
+# Fitting the Model
+```{r}
+model=lm(Grade ~ Sleep + ScreenTime + SpendTime1 + SpendTime2 + Career + Superpower,df)
+summary(model)
+```
+### Shows Co-Efficients
+```{r}
+print(model$coefficients)
+```
+### The {broom} package, and more specifically the tidy() function, which converts model into a neat data.frame
+```{r}
+res=broom::tidy(model)
+res
+```
+### You can even add new columns, such as the confidence intervals:
+```{r}
+broom::tidy(model, conf.int = TRUE, conf.level = 0.99)
+```
+#  Diagnostics
+```{r}
+broom::glance(model)
+```
+# Comparing Models
+```{r}
+ggplot(df) +
+  geom_density(aes(Grade))
+```
+## It looks like modeling the log of price might provide a better fit
+```{r}
+df=df[-1]
+model_log <- lm(log(Grade) ~ ., data = df)
+
+result_log <- broom::tidy(model_log)
+
+print(result_log)
+
+broom::glance(model_log)
+
+```
+## Let’s compare these to the ones from the previous model
+```{r}
+library('broom')
+diag_lm <- glance(model)
+
+diag_lm <- diag_lm %>% mutate(model = "lin-lin model")
+
+diag_log <- glance(model_log)
+
+diag_log  <- diag_log %>% mutate(model = "log-lin model")
+
+diagnostics_models <- full_join(diag_lm, diag_log)
+
+print(diagnostics_models)
+```
+# Using a model for prediction
+###  Let’s also take a subsample of data, which we will be using for prediction. In order to always get the same pred_set, I set the random seed first. Let’s take a look at the data
+```{r}
+set.seed(1234)
+pred_set <- df %>%
+  sample_n(20)
+
+print(pred_set)
+```
+### Use the sample data for prediction
+```{r}
+predict(model, pred_set)
+```
+```{r}
+library(car)
+
+#calculate the VIF for each predictor variable in the model
+data.frame(vif(model))
+```
+### Ridge regression
+```{r}
+index <- 1:nrow(df)
+
+set.seed(12345)
+train_index <- sample(index, round(0.90*nrow(df)), replace = FALSE)
+
+test_index <- setdiff(index, train_index)
+
+train_x <- df[train_index, ] %>% 
+    select(-Grade)
+
+train_y <- df[train_index, ] %>% 
+    pull(Grade)
+
+test_x <- df[test_index, ] %>% 
+    select(-Grade)
+
+test_y <- df[test_index, ] %>% 
+    pull(Grade)
+
+```
+
+```{r echo='false'}
+library("glmnet")
+train_matrix <- model.matrix(train_y ~ ., data = train_x)
+
+test_matrix <- model.matrix(test_y ~ ., data = test_x)
+```
+### Let’s now run a linear regression, by setting the penalty to 0
+```{r}
+model_lm_ridge <- glmnet(y = train_y, x = train_matrix, alpha = 0, lambda = 0)
+```
+### The model above provides the same result as a linear regression, because I set lambda to 0. Let’s compare the coefficients between the two
+```{r}
+coef(model_lm_ridge)
+```
+### and now the coefficients of the linear regression (because I provide a design matrix, I have to use lm.fit() instead of lm() which requires a formula, not a matrix.)
+```{r}
+coef(lm.fit(x = train_matrix, y = train_y))
+```
+```{r}
+preds_lm <- predict(model_lm_ridge, test_matrix)
+rmse_lm <- sqrt(mean(preds_lm - test_y)^2)
+rmse_lm
+```
+### Let’s now run a ridge regression, with lambda equal to 100, and see if the RMSE is smaller
+```{r}
+model_ridge <- glmnet(y = train_y, x = train_matrix, alpha = 0, lambda = 100)
+preds <- predict(model_ridge, test_matrix)
+rmse <- sqrt(mean(preds - test_y)^2)
+rmse
+```
+### To find out, one must run model over a grid of lambda values and pick the model with lowest RMSE. This procedure is available in the cv.glmnet() function, which picks the best value for lambda
+```{r}
+best_model <- cv.glmnet(train_matrix, train_y)
+# lambda that minimises the MSE
+best_model$lambda.min
+```
+# Decision Tree
+```{r}
+model <- rpart::rpart(Grade ~ ., data = df, method = "class")
+library(maptree)
+draw.tree(model,cex=0.6)
+```
+
+
+
+
