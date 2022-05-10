@@ -1,0 +1,164 @@
+---
+title: "Car Evaluation Data Analysis"
+output: html_notebook
+---
+
+## Problem : 
+To analyze the given dataset “Car Evaluation Database” and build a ML model using ML concepts to check it’s accuracy.
+
+## Contents :
+
+1. Import the Dataset
+2. Clean the Dataset
+3. Plots on Dataset
+4. Spliting the Dataset
+5. Building the Model
+6. Accuracy of Model
+
+# Install Tidyverse, Caret, RPart for Recursive Partioning Decision Trees
+```{r setup='false'}
+library(tidyverse)
+library(caret)
+library(rpart)
+```
+
+# Load Dataset
+```{r}
+df=read.csv('C:\\Users\\Rushi\\Downloads\\CSVs\\car_evaluation.csv',stringsAsFactors = T)
+df
+```
+## Check the data
+```{r}
+sum(is.na(df))
+sum(duplicated(df))
+```
+## Naming the columns 
+```{r}
+colnames(df)=c("buying","maint","doors","persons","lug_boot","safety","class")
+set.seed(777)
+```
+
+## Now lets see the dimensions,a glimpse and summary of the given dataset
+```{r}
+#Summary
+library(dplyr)
+#dimensions of the dataset
+dim(df)
+#simple glimpse of the dataset
+glimpse(df)
+#summary of each column
+summary(df)
+```
+# EDA using esquisse package
+```{r}
+#To get the data
+library(yarrr)
+
+#To get the exploratory package
+library(esquisse)
+
+#To launch the UI and explore the pirates data
+esquisse::esquisser(df, viewer = "browser")
+```
+
+```{r}
+#Visualisation
+library(ggplot2)
+ggplot(df,aes(x=class,fill=lug_boot))+geom_histogram(stat="count")+labs(title="Class Vs Luggage boot",subtitle="Histogram",y="Frequency of Luggage boot",x="Class")
+```
+```{r}
+ggplot(data = df,aes(fill=as.factor(doors),x=persons))+geom_density(alpha=0.3)
+```
+```{r}
+ggplot(data = df,aes(fill=as.factor(maint),x=class))+geom_density(alpha=0.3)+facet_wrap(~class)
+```
+# Splitting the Dataset
+
+### Since this is a large data, we split it as training and testing sets. Thus we can build a model using training set and use it to predict results on testing set.
+```{r}
+#Fitting the model
+library(caTools)
+```
+```{r}
+shuffle_index=sample(1:nrow(df))
+df=df[shuffle_index,]
+split=sample.split(df$class,SplitRatio = 0.8)
+head(split)
+```
+```{r}
+#Splitting the dataset into testing and training parts
+training_set=subset(df,split==TRUE)
+testing_set=subset(df,split==FALSE)
+
+View(training_set)
+View(testing_set)
+```
+
+# Building Model Using Machine Learning Algorithm: Decision Tree
+
+### Fitting the model as Decision Tree : **Rpart(Recursive partitioning is a statistical method for multivariable analysis)** is a powerful machine learning library in R that is used for building classification and regression trees. This library implements recursive partitioning and is very easy to use
+```{r}
+#Decision Tree
+library(rpart)
+library(rpart.plot)
+
+fit=rpart(formula = class ~ .,data=training_set,method = "class")
+predict_unseen=predict(object = fit,newdata = testing_set,type = "class")
+fit1=rpart(formula = class ~ (safety+buying+persons),data=training_set,method = "class")
+fit2=rpart(formula = class ~ (safety+maint+persons),data=training_set,method = "class")
+fit3=rpart(formula = class ~ (safety+buying+maint+persons),data=training_set,method = "class")
+```
+## Visualizing the Decision Trees
+```{r}
+rpart.plot(fit)
+```
+```{r}
+rpart.plot(fit1)
+```
+# Building Model Using Machine Learning Algorithm: Logistic Regression
+```{r}
+#Logistic Regression
+linear_regressor=glm(safety~.,family='quasibinomial',training_set)
+summary(linear_regressor)
+```
+
+```{r}
+library(inspectdf)
+inspect_types(df) %>% show_plot()
+```
+
+```{r}
+prob_predict=predict.glm(object=linear_regressor,newdata=testing_set,type = "response")
+plot(training_set$safety,training_set$class)
+```
+
+# Prediction made for the model,
+```{r}
+#Confusion matrix
+cm=table(testing_set$class,predict_unseen)
+cm
+```
+
+## Lets find the accuracy and misclassification in the developed model,
+```{r}
+accuracy=(cm[1,1]+cm[2,2]+cm[3,3]+cm[4,4])/NROW(testing_set)
+accuracy
+```
+```{r}
+misclassification=1-accuracy
+misclassification
+```
+```{r}
+#Pie Chart showing the Class Distribution 
+acc=cm[1,1]
+good=cm[2,2]
+unacc=cm[3,3]
+vgood=cm[4,4]
+library(plotrix)
+pie3D(x=c(acc,good,unacc,vgood),radius=1,explode = 0.05,labels = c("Accountable","Good","Un-Accountable","Very Good"),main="Condition of class in testing_set",start=67)
+```
+# Conclusion
+
+* All the variables are importance for customers in assessing whether the car is in acceptable or unacceptable range.
+* Safety and Seating capacity are two main factors in rejecting the cars as unacceptable.
+* Number of doors are the least important variable in deciding the class value of the car.
