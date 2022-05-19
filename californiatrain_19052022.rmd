@@ -1,0 +1,259 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+There are 20640 rows in the dataset with 10 attributes. The description of each of these as given on kaggle is as below:
+
+**longitude:** A measure of how far west a house is; a higher value is farther west
+**latitude:** A measure of how far north a house is; a higher value is farther north
+**housing_median_age:** Median age of a house within a block; a lower number is a newer building
+**total_rooms:** Total number of rooms within a block
+**total_bedrooms:** Total number of bedrooms within a block
+**population:** Total number of people residing within a block
+**households:** Total number of households, a group of people residing within a home unit, for a block
+**median_income:** Median income for households within a block of houses (measured in tens of thousands of US Dollars)
+**median_house_value:** Median house value for households within a block (measured in US Dollars)
+
+```{r}
+housing=read.csv('C:\\Users\\Rushi\\Downloads\\CSVs\\california_housing_train.csv')
+housing
+```
+## List of libraries used
+```{r}
+library(psych)
+library(corrplot)
+library(Hmisc)
+library(data.table)
+library(mltools)
+library(caTools)
+library(caret)
+library(MASS)
+```
+
+## 2. Data Cleaning
+Missing Data
+As mentioned in the previous section, there are 207 observations with NA values for “total_bedrooms”. We can handle this by imputing median value (435) at these places.
+```{r}
+visdat::vis_dat(housing)
+sum(is.na(housing))
+```
+## 3. Exploratory Data Analysis
+After we have cleaned the data, we will visualize the data to get some insights into the distribution and skewness of numeric data as well as correlation of the variables with each other.
+
+Histograms for numeric variables:
+```{r}
+par(mfrow = c(3, 3))
+hist(housing$longitude, main = "longitude", col="slateblue1")
+hist(housing$latitude, main = "latitude", col="slateblue1")
+hist(housing$housing_median_age, main = "housing_median_age", col="slateblue1")
+hist(housing$total_rooms, main = "total_rooms", col="slateblue1")
+hist(housing$total_bedrooms, main = "total_bedrooms", col="slateblue1")
+hist(housing$population, main = "population", col="slateblue1")
+hist(housing$households, main = "households", col="slateblue1")
+hist(housing$median_income, main = "median_income", col="slateblue1")
+hist(housing$median_house_value, main = "median_house_value", col="slateblue1")
+```
+```{r}
+library(ggplot2)
+plot_map = ggplot(housing, 
+                  aes(x = longitude, y = latitude, color = median_house_value, 
+                      hma = housing_median_age, tr = total_rooms, tb = total_bedrooms,
+                      hh = households, mi = median_income)) +
+              geom_point(aes(size = population), alpha = 0.4) +
+              xlab("Longitude") +
+              ylab("Latitude") +
+              ggtitle("Data Map - Longtitude vs Latitude and Associated Variables") +
+              theme(plot.title = element_text(hjust = 0.5)) +
+              scale_color_distiller(palette = "Paired") +
+              labs(color = "Median House Value (in $USD)", size = "Population")
+plot_map
+```
+## Training and Test Data
+First we want to split the data into training and testing data. We will use an 70/30 split of a randomized sample. We will use a set seed to get repeatability.
+```{r}
+library(caret)
+set.seed(420)
+housing_trn_idx = createDataPartition(housing$median_house_value, p = .50, list = FALSE)
+housing_trn_data = housing[housing_trn_idx, ]
+housing_tst_data = housing[-housing_trn_idx, ]
+```
+
+
+Note that we decided to partition using ocean_proximity since this is a predictor that we believe will play a large role in predicting housing prices.
+## Model Selection
+### Using all Model Subsets
+As a starting point we want to get an idea which parameters and their interactions are good ones to use in a potential model. To start this, we will create three initial models that will be fitted on our training data. The first model will be an additive model that utilizes all variables. The second model will be a two-way model that uses all variables as well as their two-way interactions. The third, and final, initial model will be a three-way model that uses all variables as well as their two and three-way interactions. We will create these models below.
+```{r}
+full_additive_model = lm(median_house_value ~ ., data = housing_trn_data)
+full_additive_adjr2 = summary(full_additive_model)$adj.r.squared
+
+full_twoway_model = lm(median_house_value ~ (.)^2, data = housing_trn_data)
+full_twoway_adjr2 = summary(full_twoway_model)$adj.r.squared
+
+full_threeway_model = lm(median_house_value ~ (.)^3, data = housing_trn_data)
+full_threeway_adjr2 = summary(full_threeway_model)$adj.r.squared
+```
+
+In order to take a look at initial results of these models, we will be using model selection criterion AIC and Adj.R2. We will also include the total number of predictors in each model to get a feel of the total complexity of each.
+```{r}
+beginning_mods_results = data.frame(
+  "Total Predictors" =
+    c("Additive Model" = extractAIC(full_additive_model)[1],
+      "Two-Way Int. Model" = extractAIC(full_twoway_model)[1],
+      "Three-Way Int. Model" = extractAIC(full_threeway_model)[1]),
+  "AIC" =
+    c("Additive Model" = extractAIC(full_additive_model)[2],
+      "Two-Way Int. Model" = extractAIC(full_twoway_model)[2],
+      "Three-Way Int. Model" = extractAIC(full_threeway_model)[2]),
+  "Adj R-Squared" =
+    c("Additive Model" = full_additive_adjr2,
+      "Two-Way Int. Model" = full_twoway_adjr2,
+      "Three-Way Int. Model" = full_threeway_adjr2))
+
+knitr::kable(beginning_mods_results, align = c("c", "r"))
+```
+We see that the model with the best (i.e., lowest) AIC is full_threeway_model, with a score of 3.18×105. However, although this model has the lowest AIC, it also has far more predictors (and therefore is more complex) than the other three models - 204 compared to 64 predictors for full_twoway_model, and 12 predictors for full_additive_model. This is something to keep in mind as we move forward, as model complexity should be taken into account.
+
+```{r}
+library(psych)
+pairs.panels(housing[-1])
+```
+```{r}
+library('e1071')
+nb=naiveBayes(median_house_value ~ ., housing_trn_data)
+summary(nb)
+```
+## Classification
+```{r}
+predict=predict(nb, housing_tst_data, type = "class")
+head(predict)
+```
+```{r}
+back_additive_mod_finish_aic = step(full_additive_model, direction = "backward", trace = 0)
+both_additive_mod_finish_aic = step(full_additive_model, direction = "both", trace = 0)
+
+n = length(resid(full_additive_model))
+back_additive_mod_finish_bic = step(full_additive_model, direction = "backward", k = log(n), trace = 0)
+both_additive_mod_finish_bic = step(full_additive_model, direction = "both", k = log(n), trace = 0)
+
+back_twoway_mod_finish_aic = step(full_twoway_model, direction = "backward", trace = 0)
+both_twoway_mod_finish_aic = step(full_twoway_model, direction = "both", trace = 0)
+
+n = length(resid(full_twoway_model))
+back_twoway_mod_finish_bic = step(full_twoway_model, direction = "backward", k = log(n), trace = 0)
+both_twoway_mod_finish_bic = step(full_twoway_model, direction = "both", k = log(n), trace = 0)
+aic_and_bic_results = data.frame(
+  "AIC" =
+    c("Backward" =
+        c("Additive" = extractAIC(back_additive_mod_finish_aic)[2],
+          "Two-Way" = extractAIC(back_twoway_mod_finish_aic)[2],
+          "Three-way" = extractAIC(full_threeway_model)[2]),
+      "Both" =
+        c("Additive" = extractAIC(both_additive_mod_finish_aic)[2],
+          "Two-Way" = extractAIC(both_twoway_mod_finish_aic)[2],
+          "Three-way" = extractAIC(full_threeway_model)[2])),
+  "BIC" =
+    c("Backward" =
+        c("Additive" = extractAIC(back_additive_mod_finish_bic)[2],
+          "Two-Way" = extractAIC(back_twoway_mod_finish_bic)[2],
+          "Three-way" = extractAIC(full_threeway_model)[2]),
+      "Both" =
+        c("Additive" = extractAIC(both_additive_mod_finish_bic)[2],
+          "Two-Way" = extractAIC(both_twoway_mod_finish_bic)[2],
+          "Three-way" = extractAIC(full_threeway_model)[2])))
+
+knitr::kable(aic_and_bic_results)
+```
+From the table above, we can see that the inital three-way model beats out all models selected from stepwise and backwards search using both AIC and BIC criterion. This leads us to believe this could possibly be our best model. However, we should note that the three-way model includes a large amount of variables which introduces a lot of complexity to the model.
+
+With complexity in mind, we will take a look at AIC of the other models. From now on, we will be using AIC as our main selection criterion. The model with the second lowest AIC is tied between models selected using backwards and stepwise direction of the two-way model. We believe that these models are the exact same. Using the identical function in R, we check if these models are identical which gives us the result TRUE. Since this results to TRUE, we will use back_twoway_mod_finish_aic as our best model from this chart.
+
+We will now want to do diagnostics of some models we created to check the model assumptions of normality as well as heteroskedasticity, since we cannot solely rely on AIC for model selection and must take assumptions into account. These models will be back_additive_mod_finish_aic, back_twoway_mod_finish_aic, and full_threeway_model. These models were selected by having the lowest AIC in each class of initial models (additive, two-way, and three-way).
+```{r}
+diagnostics = function(model, alpha = .05, pointcol = "orange", linecol = "blue", plots = TRUE, tests = TRUE, pointtype = 16) {
+    if (plots == TRUE) {
+        par(mfrow = c(1, 3))
+        plot(
+                fitted(model),
+                resid(model),
+                pch = pointtype,
+                xlab = "Fitted Values",
+                ylab = "Residuals",
+                main = "Fitted vs Residuals",
+                col = pointcol
+            )
+        abline(h = 0, lwd = 2, col = linecol)
+        
+        qqnorm(
+                resid(model),
+                pch = pointtype,
+                main = "QQNorm Plot",
+                col = pointcol
+            )
+        qqline(
+                resid(model),
+                lwd = 2,
+                col = linecol
+                )
+        hist(
+            resid(model),
+            main = "Histogram of Residuals",
+            col = pointcol,
+            xlab = "Residuals",
+            ylab = "Frequency"
+            )
+    }
+    if (tests == TRUE) {
+        ad_test = ad.test(resid(model))
+        bp_test = bptest(model)
+        test_results = data.frame(
+          "Anderson-Darling Normality Test" =
+            c("Test Statistic" = round(ad_test$statistic, 5),
+              "P-Value" = ad_test$p.value,
+              "Result" = ifelse(ad_test$p.value < alpha, "Reject", "Fail To Reject")),
+          "Breusch-Pagan Test" =
+            c("Test Statistic" = round(bp_test$statistic, 5),
+              "P-Value" = bp_test$p.value,
+              "Result" = ifelse(bp_test$p.value < alpha, "Reject", "Fail To Reject")))
+
+        kable(t(test_results), col.names = c("Test Statistic", "P-Value", "Decision"))
+    }
+}
+```
+
+```{r}
+diagnostics(back_additive_mod_finish_aic)
+```
+```{r}
+diagnostics(back_twoway_mod_finish_aic)
+```
+```{r}
+op0 = par()
+op1 = op0$mar
+op1[2] = 7
+par(mar = op1)
+plot(test_predictions - test_actual, housing_tst_data$ocean_proximity,
+     xlab = "Predicted Price Over / Under Actual Price",
+     ylab = "",
+     main = "Predicted Price Over / Under Actual Price vs Ocean Proximity",
+     col = "dodgerblue", yaxt = "none")
+axis(2, at = 1:5, labels = levels(housing_tst_data$ocean_proximity), las = 1)
+```
+## In order to see if these outlier data points align with the issues we saw in the Introduction, we plotted each of our model’s errors in the test data.
+```{r}
+plot_map = ggplot(housing_tst_data, 
+                  aes(x = longitude, y = latitude, 
+                      color = test_predictions - test_actual, 
+                      hma = housing_median_age, tr = total_rooms, tb = total_bedrooms,
+                      hh = households, mi = median_income)) +
+              geom_point(aes(size = abs(test_predictions - test_actual)), alpha = 0.4) +
+              xlab("Longitude") +
+              ylab("Latitude") +
+              ggtitle("Predicted Price Over / Under Actual Price") +
+              theme(plot.title = element_text(hjust = 0.5)) +
+              scale_color_distiller(palette = "Paired") +
+              labs(color = "Predicted Price Over / Under (in $USD)", 
+                   size = "Magnitude of Price Difference")
+plot_map
+```
+
